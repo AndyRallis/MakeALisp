@@ -1,6 +1,26 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-static char input[2048];
+
+#ifdef _WIN32
+#include <string.h>
+
+static char buffer[2048];
+/* Read in for Windows OS */
+char* readline(char* prompt) {
+  fputs(prompt, stdout);
+  fgets(buffer, 2048, stdin);
+  char* cpy = malloc(strlen(buffer)+1);
+  strcpy(cpy, buffer);
+  cpy[strlen(cpy)-1] = "\0";
+  return cpy;
+}
+
+void add_history(char* unused) {}
+
+#else
+#include <editline/readline.h>
+#endif
 
 int main(int argc, char** argv) {
   /* Print version info */
@@ -9,10 +29,13 @@ int main(int argc, char** argv) {
   puts("Press Ctrl+c to Exit\n");
 
   while(1) {
-  	fputs("AndyLisp> ", stdout);
-	fgets(input, 2048, stdin);
+  	char* input = readline("AndyLisp> ");
+	  
+    add_history(input);
 
-	printf("No you're a %s", input);
+	  printf("No you're a %s\n", input);
+
+    free(input);
   }
 	
 }
